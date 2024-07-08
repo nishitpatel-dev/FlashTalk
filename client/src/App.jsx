@@ -9,7 +9,7 @@ const Chat = React.lazy(() => import("./pages/Chat"));
 const Groups = React.lazy(() => import("./pages/Groups"));
 const Error = React.lazy(() => import("./pages/Error"));
 
-let user = false;
+let user = true;
 
 const App = () => {
   return (

@@ -1,0 +1,152 @@
+import {
+  AppBar,
+  Backdrop,
+  Box,
+  IconButton,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import React, { Suspense, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { orange } from "../../constants/color.js";
+import {
+  Add as AddIcon,
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Notifications as NotificationsIcon,
+} from "@mui/icons-material";
+
+const Notification = React.lazy(() => import("../specific/Notification"));
+const Search = React.lazy(() => import("../specific/Search"));
+const NewGroup = React.lazy(() => import("../specific/NewGroup"));
+
+const Header = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
+  const [isNewGroup, setIsNewGroup] = useState(false);
+  const [isNotification, setIsNotification] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleMobile = () => {
+    setIsMobile((prev) => !prev);
+  };
+
+  const openSearchDailog = () => {
+    setIsSearch((prev) => !prev);
+  };
+
+  const openNewGroup = () => {
+    setIsNewGroup((prev) => !prev);
+  };
+
+  const navigateToGroup = () => {
+    navigate("/groups");
+  };
+
+  const handleNotifications = () => {
+    setIsNotification((prev) => !prev);
+  };
+
+  const logoutHandler = () => {
+    console.log("Logout");
+  };
+
+  return (
+    <>
+      <Box sx={{ flexGrow: 1 }} height={"4rem"}>
+        <AppBar
+          position="static"
+          sx={{
+            bgcolor: orange,
+          }}
+        >
+          <Toolbar>
+            <Typography
+              variant="h6"
+              sx={{ display: { xs: "none", sm: "block" } }}
+            >
+              FlashTalk
+            </Typography>
+
+            <Box
+              sx={{
+                display: { xs: "block", sm: "none" },
+              }}
+            >
+              <IconButton color="inherit" size="large" onClick={handleMobile}>
+                <MenuIcon />
+              </IconButton>
+            </Box>
+
+            <Box sx={{ flexGrow: 1 }} />
+
+            <Box>
+              <Icon
+                title={"Search"}
+                onClick={openSearchDailog}
+                button={<SearchIcon />}
+              />
+              <Icon
+                title={"New Group"}
+                onClick={openNewGroup}
+                button={<AddIcon />}
+              />
+
+              <Icon
+                title={"Manage Group"}
+                onClick={navigateToGroup}
+                button={<GroupIcon />}
+              />
+
+              <Icon
+                title={"Notifications"}
+                onClick={handleNotifications}
+                button={<NotificationsIcon />}
+              />
+
+              <Icon
+                title={"Logout"}
+                onClick={logoutHandler}
+                button={<LogoutIcon />}
+              />
+            </Box>
+          </Toolbar>
+        </AppBar>
+      </Box>
+
+      {isSearch && (
+        <Suspense fallback={<p>Loading...</p>}>
+          <Search />
+        </Suspense>
+      )}
+
+      {isNewGroup && (
+        <Suspense fallback={<p>Loading...</p>}>
+          <NewGroup />
+        </Suspense>
+      )}
+
+      {isNotification && (
+        <Suspense fallback={<p>Loading...</p>}>
+          <Notification />
+        </Suspense>
+      )}
+    </>
+  );
+};
+
+const Icon = ({ title, onClick, button }) => {
+  return (
+    <Tooltip title={title}>
+      <IconButton color="inherit" size="large" onClick={onClick}>
+        {button}
+      </IconButton>
+    </Tooltip>
+  );
+};
+
+export default Header;
