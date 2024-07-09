@@ -119,19 +119,19 @@ const Header = () => {
       </Box>
 
       {isSearch && (
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<Backdrop open />}>
           <Search />
         </Suspense>
       )}
 
       {isNewGroup && (
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<Backdrop open />}>
           <NewGroup />
         </Suspense>
       )}
 
       {isNotification && (
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<Backdrop open />}>
           <Notification />
         </Suspense>
       )}
