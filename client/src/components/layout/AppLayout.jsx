@@ -5,10 +5,10 @@ import { Grid } from "@mui/material";
 import ChatList from "../specific/ChatList";
 import { sampleChats } from "../../constants/sampleData";
 import { useParams } from "react-router-dom";
+import Profile from "../specific/Profile";
 
 const AppLayout = (OldComponent) => {
   return () => {
-
     const params = useParams();
     const chatId = params.chatId;
 
@@ -30,7 +30,10 @@ const AppLayout = (OldComponent) => {
             }}
             height={"100%"}
           >
-            <ChatList chats={sampleChats} chatId={chatId} />
+            <ChatList
+              chats={sampleChats}
+              chatId={chatId}
+            />
           </Grid>
 
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
@@ -51,7 +54,7 @@ const AppLayout = (OldComponent) => {
               bgcolor: "rgba(0,0,0,0.85)",
             }}
           >
-            Profile
+            <Profile />
           </Grid>
         </Grid>
 

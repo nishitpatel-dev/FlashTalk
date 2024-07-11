@@ -17,6 +17,8 @@ export const sampleChats = [
       avatar: [
         "https://www.w3schools.com/howto/img_avatar.png",
         "https://www.w3schools.com/howto/img_avatar.png",
+        "https://www.w3schools.com/howto/img_avatar.png",
+        
       ],
       name: "Kavy Patel",
       _id: "3",

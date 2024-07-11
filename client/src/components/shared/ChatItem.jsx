@@ -1,8 +1,17 @@
 import React, { memo } from "react";
 import { LinkComponent } from "../styles/StyledComponents";
 import { Box, Stack, Typography } from "@mui/material";
+import AvatarCard from "./AvatarCard";
 
-const ChatItem = ({ name, _id, groupChat = false, sameSender, index = 0 }) => {
+const ChatItem = ({
+  name,
+  avatar,
+  _id,
+  groupChat = false,
+  sameSender,
+  index = 0,
+  newMessageAlert,
+}) => {
   return (
     <LinkComponent sx={{ padding: "0" }} to={`/chat/${_id}`}>
       <div
@@ -15,16 +24,16 @@ const ChatItem = ({ name, _id, groupChat = false, sameSender, index = 0 }) => {
           position: "relative",
         }}
       >
-        {/* <AvatarCard avatar={avatar} />  Avatar Section*/}
+        <AvatarCard avatar={avatar} />  
         <Stack>
-          <Typography>{name}</Typography>
-        </Stack>
-        {/* {newMessageAlert && (
+          <Typography sx={{marginLeft: "10px"}}>{name}</Typography>
+
+          {newMessageAlert && (
             <Typography>{newMessageAlert.count} New Message</Typography>
           )}
         </Stack>
 
-        {isOnline && (
+        {/* {isOnline && (
           <Box
             sx={{
               width: "10px",
