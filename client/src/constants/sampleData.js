@@ -1,49 +1,75 @@
 export const sampleChats = [
-    {
-      avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
-      name: "John Doe",
-      _id: "1",
-      groupChat: false,
-      members: ["1", "2"],
-    },
-    {
-      avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
-      name: "Nishit Patel",
-      _id: "2",
-      groupChat: false,
-      members: ["1", "2", "3"],
-    },
-    {
-      avatar: [
-        "https://www.w3schools.com/howto/img_avatar.png",
-        "https://www.w3schools.com/howto/img_avatar.png",
-        "https://www.w3schools.com/howto/img_avatar.png",
-        
-      ],
-      name: "Kavy Patel",
-      _id: "3",
-      groupChat: false,
-      members: ["1"],
-    },
-  ];
+  {
+    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    name: "John Doe",
+    _id: "1",
+    groupChat: false,
+    members: ["1", "2"],
+  },
+  {
+    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    name: "Nishit Patel",
+    _id: "2",
+    groupChat: false,
+    members: ["1", "2", "3"],
+  },
+  {
+    avatar: [
+      "https://www.w3schools.com/howto/img_avatar.png",
+      "https://www.w3schools.com/howto/img_avatar.png",
+      "https://www.w3schools.com/howto/img_avatar.png",
+    ],
+    name: "Kavy Patel",
+    _id: "3",
+    groupChat: false,
+    members: ["1"],
+  },
+];
 
-  export const sampleUsers = [
-    {
+export const sampleUsers = [
+  {
+    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    name: "John Doe",
+    _id: "1",
+  },
+  {
+    avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+    name: "Nishit Patel",
+    _id: "2",
+  },
+  {
+    avatar: [
+      "https://www.w3schools.com/howto/img_avatar.png",
+      "https://www.w3schools.com/howto/img_avatar.png",
+    ],
+    name: "Kavy Patel",
+    _id: "3",
+  },
+];
+
+export const sampleNotifications = [
+  {
+    sender: {
       avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
       name: "John Doe",
-      _id: "1",
     },
-    {
+    _id: "1",
+  },
+  {
+    sender: {
       avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
       name: "Nishit Patel",
-      _id: "2",
     },
-    {
+    _id: "2",
+  },
+  {
+    sender: {
       avatar: [
         "https://www.w3schools.com/howto/img_avatar.png",
         "https://www.w3schools.com/howto/img_avatar.png",
       ],
       name: "Kavy Patel",
-      _id: "3",
     },
-  ];
+    _id: "3",
+  },
+];
