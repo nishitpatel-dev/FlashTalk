@@ -8,7 +8,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HelmetProvider>
       <CssBaseline>
-        <div onContextMenu={(e) => e.preventDefault()}>
+        <div
+          onContextMenu={(e) => e.preventDefault()}
+          style={{
+            fontFamily: "Roboto",
+            fontWeight: "400",
+            fontStyle: "normal",
+          }}
+        >
           <App />
         </div>
       </CssBaseline>
