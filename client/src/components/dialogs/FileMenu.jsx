@@ -4,7 +4,7 @@ import React from "react";
 const FileMenu = () => {
   return (
     <>
-      <Menu>Hey</Menu>
+      <Menu open={false}>Hey</Menu>
     </>
   );
 };
