@@ -5,7 +5,7 @@ import {
   DialogTitle,
   Stack,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import { sampleUsers } from "../../constants/sampleData";
@@ -46,7 +46,7 @@ const NewGroup = () => {
           <Typography>Members</Typography>
 
           <Stack>
-            {members.map((user, index) => (
+            {members.map((user) => (
               <UserItem
                 user={user}
                 key={user._id}
