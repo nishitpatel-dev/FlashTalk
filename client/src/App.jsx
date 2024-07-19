@@ -9,6 +9,8 @@ const Login = React.lazy(() => import("./pages/Login"));
 const Chat = React.lazy(() => import("./pages/Chat"));
 const Groups = React.lazy(() => import("./pages/Groups"));
 const Error = React.lazy(() => import("./pages/Error"));
+const AdminLogin = React.lazy(() => import("./pages/admin/AdminLogin"));
+const Dashboard = React.lazy(() => import("./pages/admin/Dashboard"));
 
 let user = true;
 
@@ -32,6 +34,9 @@ const App = () => {
               </ProtectRoute>
             }
           />
+
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
 
           <Route path="*" element={<Error />} />
         </Routes>

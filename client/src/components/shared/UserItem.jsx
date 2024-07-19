@@ -3,7 +3,13 @@ import React, { memo } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosRemoveCircle } from "react-icons/io";
 
-const UserItem = ({ user, handler, handlerIsLoading, isAdded = false }) => {
+const UserItem = ({
+  user,
+  handler,
+  handlerIsLoading,
+  isAdded = false,
+  styling = {},
+}) => {
   const { name, _id, avatar } = user;
 
   return (
@@ -14,6 +20,7 @@ const UserItem = ({ user, handler, handlerIsLoading, isAdded = false }) => {
           alignItems={"center"}
           spacing={"1rem"}
           width={"100%"}
+          sx={{ ...styling }}
         >
           <Avatar />
 
