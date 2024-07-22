@@ -108,3 +108,91 @@ export const sampleMessage = [
     createdAt: "2024-07-16T11:04:49.833Z",
   },
 ];
+
+export const dashboardData = {
+  users: [
+    {
+      name: "Nishit Patel",
+      _id: "1",
+      username: "nishit",
+      avatar: "https://www.w3schools.com/howto/img_avatar.png",
+      friends: 20,
+      groups: 5,
+    },
+    {
+      name: "Kavy Patel",
+      _id: "2",
+      username: "kavy",
+      avatar: "https://www.w3schools.com/howto/img_avatar.png",
+      friends: 20,
+      groups: 50,
+    },
+  ],
+
+  chats: [
+    {
+      name: "BGMI",
+      avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+      _id: 1,
+      groupChat: false,
+      members: [
+        { _id: 1, avatar: "https://www.w3schools.com/howto/img_avatar.png" },
+        { _id: 2, avatar: "https://www.w3schools.com/howto/img_avatar.png" },
+      ],
+      totalMembers: 2,
+      totalMessages: 20,
+      creator: {
+        name: "Nishit Patel",
+        avatar: "https://www.w3schools.com/howto/img_avatar.png",
+      },
+    },
+    {
+      name: "Lau*da",
+      avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+      _id: 2,
+      groupChat: true,
+      members: [
+        { _id: 1, avatar: "https://www.w3schools.com/howto/img_avatar.png" },
+        { _id: 2, avatar: "https://www.w3schools.com/howto/img_avatar.png" },
+      ],
+      totalMembers: 2,
+      totalMessages: 20,
+      creator: {
+        name: "Nishit Patel",
+        avatar: "https://www.w3schools.com/howto/img_avatar.png",
+      },
+    },
+  ],
+
+  messages: [
+    {
+      attachments: [],
+      content: "Message",
+      _id: 1,
+      sender: {
+        avatar: "https://www.w3schools.com/howto/img_avatar.png",
+        name: "Chaman",
+      },
+      chat: "chatId",
+      groupChat: false,
+      createdAt: "2024-07-16T11:04:49.833Z",
+    },
+    {
+      attachments: [
+        {
+          public_id: "asad 2",
+          url: "https://www.w3schools.com/howto/img_avatar.png",
+        },
+      ],
+      content: "Message 2",
+      _id: 2,
+      sender: {
+        avatar: "https://www.w3schools.com/howto/img_avatar.png",
+        name: "Chaman 2",
+      },
+      chat: "chatId 2",
+      groupChat: true,
+      createdAt: "2024-07-16T11:04:49.833Z",
+    },
+  ],
+};

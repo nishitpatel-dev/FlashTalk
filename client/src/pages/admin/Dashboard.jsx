@@ -52,8 +52,68 @@ const Dashboard = () => {
       <Container component={"main"}>
         {AppBar}
 
-        <Stack direction={"row"} spacing={"2rem"} flexWrap={"wrap"}>
-          <Paper></Paper>
+        <Stack
+          direction={{
+            xs: "column",
+            lg: "row"
+          }}
+          justifyContent={"center"}
+          alignItems={{
+            xs: "center",
+            lg: "stretch"
+          }}
+          flexWrap={"wrap"}
+          sx={{
+            gap: "2rem"
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              padding: "2rem 3.5rem",
+              borderRadius: "1rem",
+              width: "100%",
+              maxWidth: "45rem",
+            }}
+          >
+            <Typography margin={"2rem 0"} variant="h4">
+              Last Messages
+            </Typography>
+
+            <LineChart value={[30, 1, 78, 2]} />
+          </Paper>
+
+          <Paper
+            elevation={3}
+            sx={{
+              padding: "1rem",
+              borderRadius: "1rem",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: { xs: "100%", sm: "50%" },
+              position: "relative",
+              width: "100%",
+              maxWidth: "25rem",
+            }}
+          >
+            <DoughnutChart
+              labels={["Single Chat", "Group Chat"]}
+              value={[23, 66]}
+            />
+
+            <Stack
+              position={"absolute"}
+              direction={"row"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              spacing={"0.5rem"}
+              width={"100%"}
+              height={"100%"}
+            >
+              <GroupIcon /> <Typography>Vs</Typography> <PersonIcon />
+            </Stack>
+          </Paper>
         </Stack>
 
         {Widgets}
@@ -61,5 +121,38 @@ const Dashboard = () => {
     </>
   );
 };
+
+const Widget = ({ title, value, icon }) => (
+  <Paper
+    elevation={3}
+    sx={{
+      padding: "2rem",
+      margin: "2rem 0",
+      borderRadius: "1.5rem",
+      width: "20rem",
+    }}
+  >
+    <Stack alignItems={"center"} spacing={"1rem"}>
+      <Typography
+        sx={{
+          color: "rgba(0,0,0,0.7)",
+          borderRadius: "50%",
+          border: `5px solid ${matblack}`,
+          width: "5rem",
+          height: "5rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {value}
+      </Typography>
+      <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
+        {icon}
+        <Typography>{title}</Typography>
+      </Stack>
+    </Stack>
+  </Paper>
+);
 
 export default AdminLayout(Dashboard);
