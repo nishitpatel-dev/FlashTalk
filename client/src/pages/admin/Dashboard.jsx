@@ -3,13 +3,18 @@ import AdminLayout from "../../components/layout/AdminLayout";
 import { Box, Container, Paper, Stack, Typography } from "@mui/material";
 import {
   AdminPanelSettings as AdminPanelSettingsIcon,
+  Group as GroupIcon,
+  Message as MessageIcon,
   Notifications as NotificationsIcon,
+  Person as PersonIcon,
 } from "@mui/icons-material";
 import moment from "moment";
 import {
   CurveButton,
   SearchField,
 } from "../../components/styles/StyledComponents";
+import { matblack } from "../../constants/color";
+import { DoughnutChart, LineChart } from "../../components/specific/Charts";
 
 const Dashboard = () => {
   const AppBar = (
@@ -45,7 +50,24 @@ const Dashboard = () => {
     </Paper>
   );
 
-  const Widgets = <>Abc</>;
+  const Widgets = (
+    <>
+      <Stack
+        direction={{
+          xs: "column",
+          sm: "row",
+        }}
+        spacing={"2rem"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+        margin={"2rem 0"}
+      >
+        <Widget title={"Users"} value={34} icon={<PersonIcon />} />
+        <Widget title={"Chats"} value={4} icon={<GroupIcon />} />
+        <Widget title={"Messages"} value={347} icon={<MessageIcon />} />
+      </Stack>
+    </>
+  );
 
   return (
     <>

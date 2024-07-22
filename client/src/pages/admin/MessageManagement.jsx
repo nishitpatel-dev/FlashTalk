@@ -27,7 +27,7 @@ const columns = [
           const url = i.url;
           const file = fileFormat(url);
 
-          console.log(url, file);
+          // console.log(url, file);
 
           return (
             <Box key={i.public_id} margin={"25px 0"}>
