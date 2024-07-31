@@ -1,21 +1,51 @@
+import { compare } from "bcrypt";
 import { User } from "../models/userModel.js";
+import { sendToken } from "../utils/features.js";
 
-const login = (req, res) => {
-  res.send("Login route");
+const login = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+
+    // console.log(username, password);
+
+    const user = await User.findOne({ username }).select("+password");
+    // console.log(user);
+
+    if (!user) {
+      return next(new Error("Invalid credentials"));
+    }
+
+    const isMatch = await compare(password, user.password);
+
+    if (!isMatch) {
+      return next(new Error("Invalid credentials"));
+    }
+
+    sendToken(user, 200, `Welcome Back ${user.name}`, res);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const registerUser = async (req, res) => {
-  // await User.create({
-  //   name: "Nishit",
-  //   username: "abhi",
-  //   password: "123456",
-  //   avatar: {
-  //     public_id: "123",
-  //     url: "https://www.google.com",
-  //   },
-  // });
+  const { name, username, password, avatar } = req.body;
 
-  res.status(201).json({ message: "User registered successfully" });
+  // console.log(req.body.name);
+  // console.log(req.file);
+
+  const user = await User.create({
+    name,
+    username,
+    password,
+    avatar: {
+      public_id: avatar.public_id,
+      url: avatar.url,
+    },
+  });
+
+  sendToken(user, 201, "User registered successfully", res);
 };
 
-export { login, registerUser };
+const getMyProfile = async (req, res) => {};
+
+export { login, registerUser, getMyProfile };
