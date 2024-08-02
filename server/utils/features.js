@@ -16,4 +16,8 @@ const sendToken = async (user, statusCode, message, res) => {
   });
 };
 
-export { sendToken, cookieOption };
+const emitEvent = (req, event, users, data) => {
+  console.log("Emitting event", event);
+};
+
+export { sendToken, cookieOption, emitEvent };

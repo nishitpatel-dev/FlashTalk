@@ -1,11 +1,12 @@
 import express from "express";
 import { isAuthenticated } from "../middlewares/auth.js";
-import { newGroupChat } from "../controllers/chatController.js";
+import { getMyChats, newGroupChat } from "../controllers/chatController.js";
 
 const router = express.Router();
 
 router.use(isAuthenticated);
 
-router.route("/new").post(newGroupChat);
+router.route("/newgroup").post(newGroupChat);
+router.route("/mychats").get(getMyChats);
 
 export default router;
