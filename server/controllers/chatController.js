@@ -162,4 +162,107 @@ const addmembers = async (req, res, next) => {
   }
 };
 
-export { newGroupChat, getMyChats, getMyGroups, addmembers };
+const removeMembers = async (req, res, next) => {
+  const { userId, chatId } = req.body;
+
+  const [chat, userThatWillBeRemoved] = await Promise.all([
+    Chat.findById(chatId),
+    User.findById(userId, "name"),
+  ]);
+
+  // console.log(chat, userThatWillBeRemoved);
+
+  if (!chat) {
+    return next(new ErrorHandler("Chat not found", 404));
+  }
+
+  if (!chat.isGroupChat) {
+    return next(new ErrorHandler("This is not a group chat", 400));
+  }
+
+  if (chat.creator.toString() !== req.user.toString()) {
+    return next(
+      new ErrorHandler("You are not authorized to remove members", 403)
+    );
+  }
+
+  if (chat.members.length <= 1) {
+    return next(new ErrorHandler("You can't remove yourself", 400));
+  }
+
+  chat.members = chat.members.filter((i) => i.toString() !== userId.toString());
+
+  await chat.save();
+
+  emitEvent(
+    req,
+    ALERT,
+    chat.members,
+    `${userThatWillBeRemoved.name} removed from the group`
+  );
+  emitEvent(req, REFETCH_CHATS, chat.members);
+
+  return res.status(200).json({
+    success: true,
+    message: "Member removed successfully",
+  });
+};
+
+const leaveGroup = async (req, res, next) => {
+  const { id } = req.params;
+
+  // console.log(req.params);
+
+  const chat = await Chat.findById(id);
+
+  if (!chat) {
+    return next(new ErrorHandler("Chat not found", 404));
+  }
+
+  if (!chat.isGroupChat) {
+    return next(new ErrorHandler("This is not a group chat", 400));
+  }
+
+  const present = chat.members.includes(req.user.toString());
+
+  if (!present) {
+    return next(new ErrorHandler("You are not a member of this group", 400));
+  }
+
+  const remainingMembers = chat.members.filter(
+    (i) => i.toString() !== req.user.toString()
+  );
+
+  if (remainingMembers.length <= 1) {
+    return next(new ErrorHandler("You can't leave the group", 400));
+  }
+
+  if (chat.creator.toString() === req.user.toString()) {
+    const randomNumber = Math.floor(Math.random() * remainingMembers.length);
+
+    const newCreator = remainingMembers[randomNumber];
+
+    chat.creator = newCreator;
+  }
+
+  chat.members = remainingMembers;
+
+  const user = await User.findById(req.user, "name");
+  await chat.save();
+
+  emitEvent(req, ALERT, chat.members, `${user.name} left the group`);
+
+  return res.status(200).json({
+    success: true,
+    message: "You left the group successfully",
+  });
+};
+
+export {
+  newGroupChat,
+  getMyChats,
+  getMyGroups,
+  addmembers,
+  removeMembers,
+  leaveGroup
+};
