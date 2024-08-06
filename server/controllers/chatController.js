@@ -12,7 +12,7 @@ import { ErrorHandler } from "../utils/utility.js";
 
 const newGroupChat = async (req, res, next) => {
   try {
-    const { name, members } = req.body;
+    const { chatName, members } = req.body;
 
     if (members.length < 2) {
       return next(
@@ -23,13 +23,13 @@ const newGroupChat = async (req, res, next) => {
     const allMembers = [...members, req.user];
 
     await Chat.create({
-      chatName: name,
+      chatName,
       isGroupChat: true,
       creator: req.user,
       members: allMembers,
     });
 
-    emitEvent(req, ALERT, allMembers, `Welcome to ${name} group`);
+    emitEvent(req, ALERT, allMembers, `Welcome to ${chatName} group`);
     emitEvent(req, REFETCH_CHATS, members);
 
     return res.status(201).json({
@@ -461,6 +461,37 @@ const deleteChat = async (req, res, next) => {
   }
 };
 
+const getMessages = async (req, res, next) => {
+  try {
+    const chatId = req.params.id;
+
+    const { page = 1 } = req.query;
+
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const [messages, totalMessages] = await Promise.all([
+      Message.find({ chatId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("sender", "name")
+        .lean(),
+      Message.countDocuments({ chatId }),
+    ]);
+
+    const totalPages = Math.ceil(totalMessages / limit);
+
+    return res.status(200).json({
+      success: true,
+      messages,
+      totalPages,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   newGroupChat,
   getMyChats,
@@ -472,4 +503,5 @@ export {
   getChatDeatils,
   renameGroup,
   deleteChat,
+  getMessages,
 };
