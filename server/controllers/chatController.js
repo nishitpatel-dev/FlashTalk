@@ -417,13 +417,13 @@ const deleteChat = async (req, res, next) => {
 
     const members = chat.members;
 
-    if (chat.groupChat && chat.creator.toString() !== req.user.toString()) {
+    if (chat.isGroupChat && chat.creator.toString() !== req.user.toString()) {
       return next(
         new ErrorHandler("You are not allowed to delete the chat", 403)
       );
     }
 
-    if (!chat.groupChat && !chat.members.includes(req.user.toString())) {
+    if (!chat.isGroupChat && !chat.members.includes(req.user.toString())) {
       return next(
         new ErrorHandler("You are not allowed to delete the chat", 403)
       );
