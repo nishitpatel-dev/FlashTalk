@@ -44,5 +44,12 @@ export const acceptRequestValidator = z.object({
     .min(3, {
       message: "Request Id Must Be At Least Of 3 Chars",
     }),
-  accept: z.boolean({ required_error: "Accept Field Is Required", invalid_type_error: "Accept Field Must Be An Boolean" }),
+  accept: z.boolean({
+    required_error: "Accept Field Is Required",
+    invalid_type_error: "Accept Field Must Be An Boolean",
+  }),
+});
+
+export const adminLoginValidator = z.object({
+  secretKey: z.string({ required_error: "Secret Key Is Required" }).trim(),
 });
