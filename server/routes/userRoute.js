@@ -8,12 +8,17 @@ import {
   logoutUser,
   registerUser,
   searchUser,
-  sendFriendRequest
+  sendFriendRequest,
 } from "../controllers/userController.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { multerUploads } from "../middlewares/multer.js";
 import { validateData } from "../middlewares/validatorMiddleware.js";
-import { acceptRequestValidator, loginSchema, sendFriendRequestValidator, signupSchema } from "../validators/userValidator.js";
+import {
+  acceptRequestValidator,
+  loginSchema,
+  sendFriendRequestValidator,
+  signupSchema,
+} from "../validators/userValidator.js";
 
 const router = express.Router();
 
@@ -31,10 +36,13 @@ router.use(isAuthenticated);
 router.route("/me").get(getMyProfile);
 router.route("/logout").get(logoutUser);
 router.route("/search").get(searchUser);
-router.route("/sendrequest").put(validateData(sendFriendRequestValidator), sendFriendRequest);
-router.route("/acceptrequest").put(validateData(acceptRequestValidator), acceptFriendRequest);
+router
+  .route("/sendrequest")
+  .put(validateData(sendFriendRequestValidator), sendFriendRequest);
+router
+  .route("/acceptrequest")
+  .put(validateData(acceptRequestValidator), acceptFriendRequest);
 router.route("/notifications").get(getMyNotifications);
 router.route("/friends").get(getMyFriends);
-
 
 export default router;

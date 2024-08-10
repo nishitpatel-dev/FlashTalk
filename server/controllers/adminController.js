@@ -218,5 +218,5 @@ export {
   getDashboardStats,
   adminLogin,
   adminLogout,
-  adminVerify
+  adminVerify,
 };

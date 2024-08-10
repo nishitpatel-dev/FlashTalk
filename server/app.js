@@ -12,6 +12,7 @@ const app = express();
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const envMode = process.env.NODE_ENV.trim() || "Production";
 
 mongoDB();
 // createFakeUser(2);
@@ -29,5 +30,7 @@ app.get("/", (req, res) => {
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT} in ${envMode} mode`);
 });
+
+export { envMode };

@@ -24,5 +24,4 @@ router.route("/chats").get(getAllChats);
 router.route("/messages").get(getAllMessages);
 router.route("/stats").get(getDashboardStats);
 
-
 export default router;
