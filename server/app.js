@@ -12,6 +12,7 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { getSockets } from "./utils/helper.js";
 import { Message } from "./models/messageModel.js";
+import cors from "cors";
 
 const app = express();
 
@@ -23,10 +24,16 @@ mongoDB();
 // createFakeUser(2);
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-app.use("/user", userRoute);
-app.use("/chat", chatRoute);
-app.use("/admin", adminRoute);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/chat", chatRoute);
+app.use("/api/v1/admin", adminRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World");

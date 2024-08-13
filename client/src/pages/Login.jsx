@@ -13,6 +13,11 @@ import { IoIosCamera } from "react-icons/io";
 import { VisuallyHiddenInput } from "../components/styles/StyledComponents";
 import { useInputValidation, useStrongPassword, useFileHandler } from "6pp";
 import { usernamevalidator } from "../utils/validators";
+import axios from "axios";
+import { server } from "../constants/config";
+import { useDispatch } from "react-redux";
+import { userExists } from "../redux/reducers/auth";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setisLogin] = useState(true);
@@ -28,24 +33,71 @@ const Login = () => {
 
   const avatar = useFileHandler("single");
 
-  const handleLogin = (e) => {
+  const dispatch = useDispatch();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-  };
-  
-//   console.log(avatar.preview);
-//   console.log(avatar.file);
 
+    const formData = new FormData();
+    formData.append("name", name.value);
+    formData.append("bio", bio.value);
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+    formData.append("avatar", avatar.file);
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/register`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  //   console.log(avatar.preview);
+  //   console.log(avatar.file);
 
   return (
     <>
       <div
         style={{
           background: "linear-gradient(rgb(226 185 255), rgb(145, 152, 229))",
-          overflowY: "hidden"
+          overflowY: "hidden",
         }}
       >
         <Container
