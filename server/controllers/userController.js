@@ -2,7 +2,7 @@ import { compare } from "bcrypt";
 import { User } from "../models/userModel.js";
 import { Chat } from "../models/chatModel.js";
 import { Request } from "../models/requestModel.js";
-import { cookieOption, emitEvent, sendToken } from "../utils/features.js";
+import { cookieOption, emitEvent, sendToken, uploadFilesToCloudinary } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 
@@ -33,19 +33,26 @@ const login = async (req, res, next) => {
 
 const registerUser = async (req, res, next) => {
   try {
-    const { name, username, password, avatar } = req.body;
+    const { name, username, password } = req.body;
 
-    // console.log(req.body.name);
-    // console.log(req.file);
+    const file = req.file;
+
+    if (!file) {
+      return next(new ErrorHandler("Please upload an image", 400));
+    }
+
+    const result = await uploadFilesToCloudinary([file]);
+
+    const avatar = {
+      public_id: result[0].public_id,
+      url: result[0].url,
+    };
 
     const user = await User.create({
       name,
       username,
       password,
-      avatar: {
-        public_id: avatar.public_id,
-        url: avatar.url,
-      },
+      avatar,
     });
 
     sendToken(user, 201, "User registered successfully", res);

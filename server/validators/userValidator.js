@@ -12,10 +12,6 @@ export const signupSchema = z.object({
   password: z
     .string({ required_error: "Password Is Required" })
     .min(6, { message: "Password Must Be At Least Of 6 Chars" }),
-  avatar: z.object({
-    public_id: z.string({ required_error: "Public Id Is Required" }),
-    url: z.string({ required_error: "Avatar Url Is Required" }),
-  }),
 });
 
 export const loginSchema = z.object({

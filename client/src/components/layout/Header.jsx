@@ -18,6 +18,11 @@ import {
   Logout as LogoutIcon,
   Notifications as NotificationsIcon,
 } from "@mui/icons-material";
+import axios from "axios";
+import { server } from "../../constants/config.js";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { userDoesNotExist } from "../../redux/reducers/auth.js";
 
 const Notification = React.lazy(() => import("../specific/Notification"));
 const Search = React.lazy(() => import("../specific/Search"));
@@ -28,6 +33,8 @@ const Header = () => {
   const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -51,8 +58,17 @@ const Header = () => {
     setIsNotification((prev) => !prev);
   };
 
-  const logoutHandler = () => {
-    console.log("Logout");
+  const logoutHandler = async () => {
+    try {
+      const { data } = await axios.get(`${server}/api/v1/user/logout`, {
+        withCredentials: true,
+      });
+
+      toast.success(data.message);
+      dispatch(userDoesNotExist());
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (

@@ -12,6 +12,7 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { getSockets } from "./utils/helper.js";
 import { Message } from "./models/messageModel.js";
+import { v2 as cloudinary } from "cloudinary";
 import cors from "cors";
 
 const app = express();
@@ -21,6 +22,13 @@ const PORT = process.env.PORT || 3000;
 const envMode = process.env.NODE_ENV.trim() || "Production";
 
 mongoDB();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // createFakeUser(2);
 app.use(express.json());
 app.use(cookieParser());
