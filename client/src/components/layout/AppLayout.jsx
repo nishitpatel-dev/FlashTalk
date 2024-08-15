@@ -21,7 +21,8 @@ const AppLayout = (OldComponent) => {
     const { isMobileMenu } = useSelector((state) => state.misc);
 
     const { isLoading, data, isError, error, refetch } = useGetMyChatsQuery("");
-
+    console.log(data);
+    
     useErrors([{ isError, error }]);
 
     const handleMobileMenuClose = () => {

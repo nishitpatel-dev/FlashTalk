@@ -55,15 +55,21 @@ const getMyChats = async (req, res, next) => {
           isGroupChat,
           avatar: isGroupChat
             ? members.slice(0, 3).map(({ avatar }) => avatar.url)
-            : [members[0].avatar.url],
-          chatName: isGroupChat ? chatName : members[0].name,
+            : [
+                members.filter(
+                  (member) => member._id.toString() !== req.user
+                )[0].avatar.url,
+              ],
           members: members.reduce((acc, curr) => {
             if (curr._id.toString() !== req.user.toString()) {
               acc.push(curr._id);
             }
-
             return acc;
           }, []),
+          chatName: isGroupChat
+            ? chatName
+            : members.filter((member) => member._id.toString() !== req.user)[0]
+                .name,
         };
       }
     );

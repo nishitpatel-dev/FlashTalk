@@ -94,7 +94,9 @@ const searchUser = async (req, res, next) => {
 
     const myChats = await Chat.find({ isGroupChat: false, members: req.user });
 
-    const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+    const allUsersFromMyChats = myChats
+      .flatMap((chat) => chat.members)
+      .concat([req.user]);
 
     const allUsersExceptMeAndFriends = await User.find({
       _id: { $nin: allUsersFromMyChats },

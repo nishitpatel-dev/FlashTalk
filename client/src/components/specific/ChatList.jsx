@@ -24,7 +24,7 @@ const ChatList = ({
       }}
     >
       {chats?.map((data, index) => {
-        const { avatar, name, _id, groupChat, members } = data;
+        const { avatar, chatName, _id, isGroupChat, members } = data;
 
         const newMessageAlert = newMessagesAlert.find(
           (element) => element.chatId == _id
@@ -34,11 +34,11 @@ const ChatList = ({
           <ChatItem
             index={index}
             avatar={avatar}
-            name={name}
+            name={chatName}
             _id={_id}
             key={_id}
             sameSender={chatId === _id}
-            groupChat={groupChat}
+            groupChat={isGroupChat}
             newMessageAlert={newMessageAlert}
           />
         );
