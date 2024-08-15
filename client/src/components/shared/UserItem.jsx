@@ -2,6 +2,7 @@ import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
 import React, { memo } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosRemoveCircle } from "react-icons/io";
+import { transformImage } from "../../lib/features";
 
 const UserItem = ({
   user,
@@ -22,7 +23,7 @@ const UserItem = ({
           width={"100%"}
           sx={{ ...styling }}
         >
-          <Avatar />
+          <Avatar src={transformImage(avatar)} />
 
           <Typography
             variant={"body1"}

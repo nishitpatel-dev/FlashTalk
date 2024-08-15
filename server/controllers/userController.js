@@ -2,7 +2,12 @@ import { compare } from "bcrypt";
 import { User } from "../models/userModel.js";
 import { Chat } from "../models/chatModel.js";
 import { Request } from "../models/requestModel.js";
-import { cookieOption, emitEvent, sendToken, uploadFilesToCloudinary } from "../utils/features.js";
+import {
+  cookieOption,
+  emitEvent,
+  sendToken,
+  uploadFilesToCloudinary,
+} from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 
@@ -33,7 +38,7 @@ const login = async (req, res, next) => {
 
 const registerUser = async (req, res, next) => {
   try {
-    const { name, username, password } = req.body;
+    const { name, bio, username, password } = req.body;
 
     const file = req.file;
 
@@ -50,6 +55,7 @@ const registerUser = async (req, res, next) => {
 
     const user = await User.create({
       name,
+      bio,
       username,
       password,
       avatar,
@@ -129,7 +135,9 @@ const sendFriendRequest = async (req, res, next) => {
 
     emitEvent(req, NEW_REQUEST, [receiverId]);
 
-    return res.status(200).json({ success: true, message: "Request sent" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Friend Request sent" });
   } catch (error) {
     next(error);
   }

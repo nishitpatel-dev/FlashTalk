@@ -5,6 +5,9 @@ export const signupSchema = z.object({
     .string({ required_error: "Name Is Required" })
     .trim()
     .min(3, { message: "Name Must Be At Least Of 3 Chars" }),
+  bio: z.string({ required_error: "Bio Is Required" }).trim().min(3, {
+    message: "Bio Must Be At Least Of 3 Chars",
+  }),
   username: z
     .string({ required_error: "Username Is Required" })
     .trim()

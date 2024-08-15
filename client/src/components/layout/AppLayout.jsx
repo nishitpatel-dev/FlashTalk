@@ -1,21 +1,45 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 import Title from "../shared/Title";
-import { Grid } from "@mui/material";
+import { Drawer, Grid, Skeleton } from "@mui/material";
 import ChatList from "../specific/ChatList";
 import { sampleChats } from "../../constants/sampleData";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/Profile";
+import { useGetMyChatsQuery } from "../../redux/api/api";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsMobileMenu } from "../../redux/reducers/misc";
+import toast from "react-hot-toast";
+import { useErrors } from "../../hooks/hook";
 
 const AppLayout = (OldComponent) => {
   return () => {
     const params = useParams();
+    const dispatch = useDispatch();
     const chatId = params.chatId;
+
+    const { isMobileMenu } = useSelector((state) => state.misc);
+
+    const { isLoading, data, isError, error, refetch } = useGetMyChatsQuery("");
+
+    useErrors([{ isError, error }]);
+
+    const handleMobileMenuClose = () => {
+      dispatch(setIsMobileMenu(false));
+    };
 
     return (
       <>
         <Title />
         <Header />
+
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          <Drawer open={isMobileMenu} onClose={handleMobileMenuClose}>
+            <ChatList w="70vw" chats={data?.chats} chatId={chatId} />
+          </Drawer>
+        )}
 
         <Grid container height={"calc(100vh - 4rem)"}>
           <Grid
@@ -30,7 +54,11 @@ const AppLayout = (OldComponent) => {
             }}
             height={"100%"}
           >
-            <ChatList chats={sampleChats} chatId={chatId} />
+            {isLoading ? (
+              <Skeleton />
+            ) : (
+              <ChatList chats={data?.chats} chatId={chatId} />
+            )}
           </Grid>
 
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>

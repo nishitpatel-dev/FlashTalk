@@ -21,29 +21,30 @@ import {
 import axios from "axios";
 import { server } from "../../constants/config.js";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userDoesNotExist } from "../../redux/reducers/auth.js";
+import { setIsMobileMenu, setIsSearch } from "../../redux/reducers/misc.js";
 
 const Notification = React.lazy(() => import("../specific/Notification"));
 const Search = React.lazy(() => import("../specific/Search"));
 const NewGroup = React.lazy(() => import("../specific/NewGroup"));
 
 const Header = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
 
   const dispatch = useDispatch();
 
+  const { isSearch } = useSelector((state) => state.misc);
+
   const navigate = useNavigate();
 
   const handleMobile = () => {
-    setIsMobile((prev) => !prev);
+    dispatch(setIsMobileMenu(true));
   };
 
   const openSearchDailog = () => {
-    setIsSearch((prev) => !prev);
+    dispatch(setIsSearch(true));
   };
 
   const openNewGroup = () => {
