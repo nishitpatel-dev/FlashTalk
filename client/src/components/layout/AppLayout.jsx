@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
-import Header from "./Header";
-import Title from "../shared/Title";
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import ChatList from "../specific/ChatList";
-import { sampleChats } from "../../constants/sampleData";
-import { useParams } from "react-router-dom";
-import Profile from "../specific/Profile";
-import { useGetMyChatsQuery } from "../../redux/api/api";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsMobileMenu } from "../../redux/reducers/misc";
-import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 import { useErrors } from "../../hooks/hook";
+import { useGetMyChatsQuery } from "../../redux/api/api";
+import { setIsMobileMenu } from "../../redux/reducers/misc";
+import { getSocket } from "../../socket";
+import Title from "../shared/Title";
+import ChatList from "../specific/ChatList";
+import Profile from "../specific/Profile";
+import Header from "./Header";
 
 const AppLayout = (OldComponent) => {
   return () => {
@@ -21,7 +20,6 @@ const AppLayout = (OldComponent) => {
     const { isMobileMenu } = useSelector((state) => state.misc);
 
     const { isLoading, data, isError, error, refetch } = useGetMyChatsQuery("");
-    console.log(data);
     
     useErrors([{ isError, error }]);
 
@@ -63,7 +61,7 @@ const AppLayout = (OldComponent) => {
           </Grid>
 
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
-            <OldComponent />
+            <OldComponent chatId={chatId}/>
           </Grid>
 
           <Grid

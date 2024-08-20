@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
     <Provider store={store}>
     <HelmetProvider>
       <CssBaseline>
@@ -24,5 +23,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       </CssBaseline>
     </HelmetProvider>
     </Provider>
-  </React.StrictMode>
 );

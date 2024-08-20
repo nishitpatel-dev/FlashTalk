@@ -476,7 +476,7 @@ const getMessages = async (req, res, next) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const [messages, totalMessages] = await Promise.all([
+    const [reverseMessages, totalMessages] = await Promise.all([
       Message.find({ chatId })
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -485,6 +485,8 @@ const getMessages = async (req, res, next) => {
         .lean(),
       Message.countDocuments({ chatId }),
     ]);
+
+    const messages = reverseMessages.reverse();
 
     const totalPages = Math.ceil(totalMessages / limit);
 

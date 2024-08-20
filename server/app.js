@@ -14,6 +14,9 @@ import { getSockets } from "./utils/helper.js";
 import { Message } from "./models/messageModel.js";
 import { v2 as cloudinary } from "cloudinary";
 import cors from "cors";
+import { ErrorHandler } from "./utils/utility.js";
+import jwt from "jsonwebtoken";
+import { User } from "./models/userModel.js";
 
 const app = express();
 
@@ -55,24 +58,48 @@ const serverInstance = app.listen(PORT, () => {
 
 const io = new Server(serverInstance, {
   cors: {
-    origin: "*",
-    methods: ["POST", "GET"],
-    credentials: true, //access-control-allow-credentials:true
+    origin: "http://localhost:5173",
+    credentials: true,
   },
 });
 
 export const userScoketIDs = new Map();
 
-io.use((socket, next) => {});
+io.use((socket, next) => {
+  cookieParser()(socket.request, socket.request.res, async () => {
+    try {
+      const authToken = socket.request.cookies["flashtalk-token"];
+
+      if (!authToken) {
+        return next(
+          new ErrorHandler("Not authorized to access this route", 401)
+        );
+      }
+
+      const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
+
+      const user = await User.findById(decodedData.id);
+
+      if (!user) {
+        return next(
+          new ErrorHandler("Not authorized to access this route", 401)
+        );
+      }
+
+      socket.user = user;
+
+      next();
+    } catch (error) {
+      return next(new ErrorHandler("Not authorized to access this route", 401));
+    }
+  });
+});
 
 io.on("connection", (socket) => {
-  const user = {
-    _id: "asad",
-    name: "Mohan",
-  };
+  const user = socket.user;
   userScoketIDs.set(user._id.toString(), socket.id);
-  console.log("Socket connected", socket.id);
-  console.log(userScoketIDs);
+  // console.count("Socket connected", socket.id);
+  // console.log(userScoketIDs);
 
   socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
     const messageForRealTime = {
@@ -90,8 +117,7 @@ io.on("connection", (socket) => {
       content: message,
       sender: user._id,
       chatId,
-    };
-
+    };    
     const membersSockets = getSockets(members);
 
     io.to(membersSockets).emit(NEW_MESSAGE, {
@@ -112,7 +138,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     userScoketIDs.delete(user._id.toString());
-    console.log("Socket disconnected", socket.id);
+    // console.log("Socket disconnected", socket.id);
   });
 });
 
