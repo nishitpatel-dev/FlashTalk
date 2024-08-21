@@ -23,9 +23,9 @@ const MessageManagement = React.lazy(() =>
 );
 const ChatManagement = React.lazy(() => import("./pages/admin/ChatManagement"));
 
-const App = () => {
-  const user = useSelector((state) => state.auth.user);
 
+const App = () => {
+  const user = React.lazy(() => useSelector((state) => state.auth.user));
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import { v4 as uuid } from "uuid";
-import { getBase64 } from "./helper.js";
+import { getBase64, getSockets } from "./helper.js";
 
 const cookieOption = {
   maxAge: 15 * 24 * 60 * 60 * 1000,
@@ -20,7 +20,10 @@ const sendToken = async (user, statusCode, message, res) => {
 };
 
 const emitEvent = (req, event, users, data) => {
-  console.log("Emitting event", event);
+  let io = req.app.get("io");
+
+  let userSockets = getSockets(users);
+  io.to(userSockets).emit(event, data);
 };
 
 const uploadFilesToCloudinary = async (files = []) => {

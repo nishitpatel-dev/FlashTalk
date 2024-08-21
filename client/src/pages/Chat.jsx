@@ -4,7 +4,7 @@ import {
 } from "@mui/icons-material";
 import { IconButton, Skeleton, Stack } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FileMenu from "../components/dialogs/FileMenu";
 import AppLayout from "../components/layout/AppLayout";
 import MessageComponent from "../components/shared/MessageComponent";
@@ -14,6 +14,8 @@ import { NEW_MESSAGE } from "../constants/events";
 import { useErrors } from "../hooks/hook";
 import { useChatDetailsQuery, useGetMyMessagesQuery } from "../redux/api/api";
 import { getSocket } from "../socket";
+import { setIsFileMenu } from "../redux/reducers/misc";
+import { removeMessagesAlert } from "../redux/reducers/chat";
 
 const Chat = ({ chatId }) => {
   const containerRef = useRef(null);
@@ -27,6 +29,9 @@ const Chat = ({ chatId }) => {
   const [page, setPage] = useState(1);
   const [initialLoad, setInitialLoad] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(0);
+  const [fileMenuAnchorEl, setFileMenuAnchorEl] = useState(null);
+
+  const dispatch = useDispatch();
 
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
   const messagesInChunk = useGetMyMessagesQuery({ chatId, page });
@@ -42,9 +47,15 @@ const Chat = ({ chatId }) => {
   const members = chatDetails?.data?.chat?.members;
 
   const errors = [
-    { isError: chatDetails?.isError, error: chatDetails?.error },
+    // { isError: chatDetails?.isError, error: chatDetails?.error },
     { isError: messagesInChunk?.isError, error: messagesInChunk?.error },
   ];
+
+  const handleFileOpen = (e) => {
+    dispatch(setIsFileMenu(true));
+
+    setFileMenuAnchorEl(e.currentTarget);
+  };
 
   const sendMessageHandler = (e) => {
     e.preventDefault();
@@ -55,9 +66,25 @@ const Chat = ({ chatId }) => {
     setMessage("");
   };
 
-  const newMessageHandler = useCallback(({ chatId, message }) => {
-    setMessages((prev) => [...prev, message]);
-  }, []);
+  useEffect(() => {
+    dispatch(removeMessagesAlert(chatId));
+
+    return () => {
+      setMessages([]);
+      setAllMessages([]);
+      setPage(null);
+      setScrollHeight(0);
+    };
+  }, [chatId]);
+
+  const newMessageHandler = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+
+      setMessages((prev) => [...prev, data.message]);
+    },
+    [chatId]
+  );
 
   useEffect(() => {
     socket.on(NEW_MESSAGE, newMessageHandler);
@@ -65,7 +92,7 @@ const Chat = ({ chatId }) => {
     return () => {
       socket.off(NEW_MESSAGE, newMessageHandler);
     };
-  }, []);
+  }, [chatId]);
 
   useErrors(errors);
 
@@ -126,7 +153,11 @@ const Chat = ({ chatId }) => {
         ))}
 
         {messages.map((message) => (
-          <MessageComponent message={message} user={user} key={message._id} />
+          <MessageComponent
+            message={message}
+            user={user}
+            key={message._id || message.attachments[0].public_id}
+          />
         ))}
       </Stack>
 
@@ -145,6 +176,7 @@ const Chat = ({ chatId }) => {
               position: "absolute",
               left: "1.5rem",
             }}
+            onClick={handleFileOpen}
           >
             <AttachFileIcon />
           </IconButton>
@@ -174,7 +206,7 @@ const Chat = ({ chatId }) => {
         </Stack>
       </form>
 
-      <FileMenu />
+      <FileMenu anchorEl={fileMenuAnchorEl} chatId={chatId} />
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useErrors } from "../../hooks/hook";
@@ -10,22 +10,54 @@ import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
 import Profile from "../specific/Profile";
 import Header from "./Header";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events";
+import {
+  incrementNotificationCount,
+  setNewMessagesAlert,
+} from "../../redux/reducers/chat";
+import { getOrSaveFromStorage } from "../../lib/features";
 
 const AppLayout = (OldComponent) => {
   return () => {
     const params = useParams();
     const dispatch = useDispatch();
     const chatId = params.chatId;
+    const socket = getSocket();
 
     const { isMobileMenu } = useSelector((state) => state.misc);
+    const { newMessagesAlert } = useSelector((state) => state.chat);
 
     const { isLoading, data, isError, error, refetch } = useGetMyChatsQuery("");
-    
+
     useErrors([{ isError, error }]);
+
+    useEffect(() => {
+      getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessagesAlert });
+    }, [newMessagesAlert]);
 
     const handleMobileMenuClose = () => {
       dispatch(setIsMobileMenu(false));
     };
+
+    const newRequestHandler = useCallback(() => {
+      dispatch(incrementNotificationCount());
+    }, []);
+
+    const newMessageAlertHandler = useCallback((data) => {
+      if (data.chatId === chatId) return;
+
+      dispatch(setNewMessagesAlert(data));
+    }, [chatId]);
+
+    useEffect(() => {
+      socket.on(NEW_REQUEST, newRequestHandler);
+      socket.on(NEW_MESSAGE_ALERT, newMessageAlertHandler);
+
+      return () => {
+        socket.off(NEW_REQUEST, newRequestHandler);
+        socket.off(NEW_MESSAGE_ALERT, newMessageAlertHandler);
+      };
+    }, [chatId]);
 
     return (
       <>
@@ -36,7 +68,12 @@ const AppLayout = (OldComponent) => {
           <Skeleton />
         ) : (
           <Drawer open={isMobileMenu} onClose={handleMobileMenuClose}>
-            <ChatList w="70vw" chats={data?.chats} chatId={chatId} />
+            <ChatList
+              w="70vw"
+              chats={data?.chats}
+              chatId={chatId}
+              newMessagesAlert={newMessagesAlert}
+            />
           </Drawer>
         )}
 
@@ -56,12 +93,16 @@ const AppLayout = (OldComponent) => {
             {isLoading ? (
               <Skeleton />
             ) : (
-              <ChatList chats={data?.chats} chatId={chatId} />
+              <ChatList
+                chats={data?.chats}
+                chatId={chatId}
+                newMessagesAlert={newMessagesAlert}
+              />
             )}
           </Grid>
 
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
-            <OldComponent chatId={chatId}/>
+            <OldComponent chatId={chatId} />
           </Grid>
 
           <Grid
@@ -82,7 +123,7 @@ const AppLayout = (OldComponent) => {
           </Grid>
         </Grid>
 
-        <p>Footer</p>
+        {/* <p>Footer</p> */}
       </>
     );
   };

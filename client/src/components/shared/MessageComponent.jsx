@@ -27,11 +27,7 @@ const MessageComponent = ({ message, user }) => {
       }}
     >
       {!sameSender && (
-        <Typography
-          color={lightBlue}
-          fontWeight={"600"}
-          variant="caption"
-        >
+        <Typography color={lightBlue} fontWeight={"600"} variant="caption">
           {sender.name}
         </Typography>
       )}
@@ -39,12 +35,12 @@ const MessageComponent = ({ message, user }) => {
       {content && <Typography>{content}</Typography>}
 
       {attachments.length > 0 &&
-        attachments.map((attachment, index) => {
+        attachments.map((attachment) => {
           const url = attachment.url;
           const file = fileFormat(url);
 
           return (
-            <Box key={index}>
+            <Box key={attachment.public_id}>
               <a href={url} target="_blank" style={{ color: "black" }} download>
                 <RenderAttachment url={url} file={file} />
               </a>

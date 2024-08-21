@@ -1,13 +1,17 @@
 import {
   ALERT,
-  NEW_ATTCHMENT,
+  NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
   REFETCH_CHATS,
 } from "../constants/events.js";
 import { Chat } from "../models/chatModel.js";
-import { User } from "../models/userModel.js";
 import { Message } from "../models/messageModel.js";
-import { deleteFilesFromCloudniary, emitEvent } from "../utils/features.js";
+import { User } from "../models/userModel.js";
+import {
+  deleteFilesFromCloudniary,
+  emitEvent,
+  uploadFilesToCloudinary,
+} from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 
 const newGroupChat = async (req, res, next) => {
@@ -300,7 +304,7 @@ const sendAttachment = async (req, res, next) => {
     }
 
     //Upload files here
-    const attachments = [];
+    const attachments = await uploadFilesToCloudinary(files);
 
     const messageForDB = {
       content: "",
@@ -319,7 +323,7 @@ const sendAttachment = async (req, res, next) => {
 
     const message = await Message.create(messageForDB);
 
-    emitEvent(req, NEW_ATTCHMENT, chat.members, {
+    emitEvent(req, NEW_MESSAGE, chat.members, {
       message: messageForRealTime,
       chatId,
     });
@@ -501,15 +505,15 @@ const getMessages = async (req, res, next) => {
 };
 
 export {
-  newGroupChat,
+  addmembers,
+  deleteChat,
+  getChatDeatils,
+  getMessages,
   getMyChats,
   getMyGroups,
-  addmembers,
-  removeMembers,
   leaveGroup,
-  sendAttachment,
-  getChatDeatils,
+  newGroupChat,
+  removeMembers,
   renameGroup,
-  deleteChat,
-  getMessages,
+  sendAttachment,
 };

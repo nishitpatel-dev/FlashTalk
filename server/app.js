@@ -63,6 +63,8 @@ const io = new Server(serverInstance, {
   },
 });
 
+app.set("io", io);
+
 export const userScoketIDs = new Map();
 
 io.use((socket, next) => {
