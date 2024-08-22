@@ -135,12 +135,12 @@ const Chat = ({ chatId }) => {
 
   const handleAlertListener = useCallback(
     (data) => {
-      // if (data.chatId !== chatId) return;
+      if (data?.chatId !== chatId) return;
 
       const messageForAlert = {
-        content: data,
+        content: data.message,
         sender: {
-          _id: "user._id",
+          _id: Math.random() * 1000,
           name: "Admin",
         },
         _id: "hiwbqcbwcwucbq",
@@ -196,15 +196,9 @@ const Chat = ({ chatId }) => {
     }
   }, [messages]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (!chatDetails?.data?.chat) {
-  //       console.log("Entered");
-  //       // toast.error("Chat not found");
-  //       return navigate("/");
-  //     }
-  //   };
-  // }, [chatDetails.data]); // Remember to recreate this...
+  useEffect(() => {
+    if (chatDetails.isError) return navigate("/");
+  }, [chatDetails.isError]); // Checkout the solution at Bug Fix Time
 
   useEffect(() => {
     if (containerRef?.current) {

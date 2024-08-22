@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setisLogin] = useState(true);
+  const [isLoading, setisLoading] = useState(false);
 
   const handleFileInputClick = () => {
     document.getElementById("fileInput").click();
@@ -38,6 +39,10 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    const toastId = toast.loading("Logging in...");
+
+    setisLoading(true);
+
     try {
       const { data } = await axios.post(
         `${server}/api/v1/user/login`,
@@ -53,15 +58,23 @@ const Login = () => {
         }
       );
 
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message, { id: toastId });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something went wrong", {
+        id: toastId,
+      });
+    } finally {
+      setisLoading(false);
     }
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    const toastId = toast.loading("Signing up...");
+
+    setisLoading(true);
 
     const formData = new FormData();
     formData.append("name", name.value);
@@ -82,15 +95,16 @@ const Login = () => {
         }
       );
 
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message, { id: toastId });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something went wrong", {
+        id: toastId,
+      });
+    } finally {
+      setisLoading(false);
     }
   };
-
-  //   console.log(avatar.preview);
-  //   console.log(avatar.file);
 
   return (
     <>
@@ -158,6 +172,7 @@ const Login = () => {
                     sx={{
                       marginTop: "1rem",
                     }}
+                    disabled={isLoading}
                   >
                     Login
                   </Button>
@@ -170,6 +185,7 @@ const Login = () => {
                     variant="text"
                     fullWidth
                     onClick={() => setisLogin(false)}
+                    disabled={isLoading}
                   >
                     Register
                   </Button>
@@ -305,6 +321,7 @@ const Login = () => {
                     sx={{
                       marginTop: "1rem",
                     }}
+                    disabled={isLoading}
                   >
                     Register
                   </Button>
@@ -317,6 +334,7 @@ const Login = () => {
                     variant="text"
                     fullWidth
                     onClick={() => setisLogin(true)}
+                    disabled={isLoading}
                   >
                     Login
                   </Button>

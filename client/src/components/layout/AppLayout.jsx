@@ -1,10 +1,10 @@
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useErrors } from "../../hooks/hook";
 import { useGetMyChatsQuery } from "../../redux/api/api";
-import { setIsMobileMenu } from "../../redux/reducers/misc";
+import { setIsDeleteMenu, setIsMobileMenu, setSelectedDeleteChat } from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
@@ -20,12 +20,15 @@ import {
   setNewMessagesAlert,
 } from "../../redux/reducers/chat";
 import { getOrSaveFromStorage } from "../../lib/features";
+import DeleteChatMenu from "../dialogs/DeleteChatMenu";
 
 const AppLayout = (OldComponent) => {
   return () => {
     const params = useParams();
     const dispatch = useDispatch();
     const chatId = params.chatId;
+    const deleteMenuAnchor = useRef(null);
+
     const socket = getSocket();
 
     const navigate = useNavigate();
@@ -40,6 +43,13 @@ const AppLayout = (OldComponent) => {
     useEffect(() => {
       getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessagesAlert });
     }, [newMessagesAlert]);
+
+    const handleDeleteChat = (e, _id, groupChat) => {      
+      dispatch(setIsDeleteMenu(true));
+      dispatch(setSelectedDeleteChat({ chatId: _id, groupChat }));
+      deleteMenuAnchor.current = e.currentTarget;
+
+    };
 
     const handleMobileMenuClose = () => {
       dispatch(setIsMobileMenu(false));
@@ -79,6 +89,10 @@ const AppLayout = (OldComponent) => {
       <>
         <Title />
         <Header />
+        <DeleteChatMenu
+          dispatch={dispatch}
+          deleteOptionAnchor={deleteMenuAnchor.current}
+        />
 
         {isLoading ? (
           <Skeleton />
@@ -88,6 +102,7 @@ const AppLayout = (OldComponent) => {
               w="70vw"
               chats={data?.chats}
               chatId={chatId}
+              handleDeleteChat={handleDeleteChat}
               newMessagesAlert={newMessagesAlert}
             />
           </Drawer>
@@ -112,6 +127,7 @@ const AppLayout = (OldComponent) => {
               <ChatList
                 chats={data?.chats}
                 chatId={chatId}
+                handleDeleteChat={handleDeleteChat}
                 newMessagesAlert={newMessagesAlert}
               />
             )}

@@ -15,6 +15,7 @@ const sendToken = async (user, statusCode, message, res) => {
 
   res.status(statusCode).cookie("flashtalk-token", token, cookieOption).json({
     success: true,
+    user,
     message,
   });
 };
@@ -59,7 +60,7 @@ const uploadFilesToCloudinary = async (files = []) => {
 };
 
 const deleteFilesFromCloudniary = async (public_ids) => {
-  console.log("Deleting files from cloudinary");
+  // console.log("Deleting files from cloudinary");
 };
 
 export {

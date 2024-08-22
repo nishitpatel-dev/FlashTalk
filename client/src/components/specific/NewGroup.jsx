@@ -9,16 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { sampleUsers } from "../../constants/sampleData";
-import UserItem from "../shared/UserItem";
 import { useDispatch, useSelector } from "react-redux";
+import { useErrors, useMutation } from "../../hooks/hook";
 import {
   useAvailableFriendsQuery,
   useNewGroupMutation,
 } from "../../redux/api/api";
-import { useErrors, useMutation } from "../../hooks/hook";
 import { setIsNewGroup } from "../../redux/reducers/misc";
-import toast from "react-hot-toast";
+import UserItem from "../shared/UserItem";
 
 const NewGroup = () => {
   const dispatch = useDispatch();

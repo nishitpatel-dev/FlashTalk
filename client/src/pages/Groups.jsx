@@ -37,6 +37,7 @@ import {
   useRenameGroupMutation,
 } from "../redux/api/api";
 import { setIsAddMember } from "../redux/reducers/misc";
+import { motion } from "framer-motion";
 
 const ConfirmDeleteDailog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDailog")

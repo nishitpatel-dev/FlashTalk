@@ -13,6 +13,7 @@ const ChatList = ({
     },
   ],
   onlineUsers = [],
+  handleDeleteChat,
 }) => {
   return (
     <Stack
@@ -40,6 +41,7 @@ const ChatList = ({
             sameSender={chatId === _id}
             groupChat={isGroupChat}
             newMessageAlert={newMessageAlert}
+            handleDeleteChat={handleDeleteChat}
           />
         );
       })}

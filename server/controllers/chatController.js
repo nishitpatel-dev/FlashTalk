@@ -33,7 +33,9 @@ const newGroupChat = async (req, res, next) => {
       members: allMembers,
     });
 
-    emitEvent(req, ALERT, allMembers, `Welcome to ${chatName} group`);
+    emitEvent(req, ALERT, allMembers, {
+      message: `Welcome to ${chatName} group`,
+    });
     emitEvent(req, REFETCH_CHATS, members);
 
     return res.status(201).json({
@@ -166,7 +168,10 @@ const addmembers = async (req, res, next) => {
 
     // console.log(allNewUsername);
 
-    emitEvent(req, ALERT, chat.members, `${allNewUsername} added to the group`);
+    emitEvent(req, ALERT, chat.members, {
+      message: `${allNewUsername} added to the group`,
+      chatId,
+    });
     emitEvent(req, REFETCH_CHATS, chat.members);
 
     return res.status(200).json({
@@ -215,12 +220,10 @@ const removeMembers = async (req, res, next) => {
 
     await chat.save();
 
-    emitEvent(
-      req,
-      ALERT,
-      chat.members,
-      `${userThatWillBeRemoved.name} removed from the group`
-    );
+    emitEvent(req, ALERT, chat.members, {
+      message: `${userThatWillBeRemoved.name} removed from the group`,
+      chatId,
+    });
     emitEvent(req, REFETCH_CHATS, allChatMembers);
 
     return res.status(200).json({
@@ -275,7 +278,10 @@ const leaveGroup = async (req, res, next) => {
     const user = await User.findById(req.user, "name");
     await chat.save();
 
-    emitEvent(req, ALERT, chat.members, `${user.name} left the group`);
+    emitEvent(req, ALERT, chat.members, {
+      message: `${user.name} left the group`,
+      chatId: id,
+    });
 
     return res.status(200).json({
       success: true,
@@ -419,7 +425,7 @@ const renameGroup = async (req, res, next) => {
 
 const deleteChat = async (req, res, next) => {
   try {
-    const chatId = req.params.id;    
+    const chatId = req.params.id;
 
     const chat = await Chat.findById(chatId);
 
