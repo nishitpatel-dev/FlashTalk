@@ -148,7 +148,7 @@ const addmembers = async (req, res, next) => {
       .filter((i) => !chat.members.includes(i._id.toString()))
       .map((i) => i._id);
 
-    console.log(uniqueMembers);
+    // console.log(uniqueMembers);
 
     if (uniqueMembers.length < 1) {
       return next(new ErrorHandler("Members already added", 400));
@@ -207,6 +207,8 @@ const removeMembers = async (req, res, next) => {
       return next(new ErrorHandler("You can't remove yourself", 400));
     }
 
+    const allChatMembers = chat.members.map((i) => i.toString());
+
     chat.members = chat.members.filter(
       (i) => i.toString() !== userId.toString()
     );
@@ -219,7 +221,7 @@ const removeMembers = async (req, res, next) => {
       chat.members,
       `${userThatWillBeRemoved.name} removed from the group`
     );
-    emitEvent(req, REFETCH_CHATS, chat.members);
+    emitEvent(req, REFETCH_CHATS, allChatMembers);
 
     return res.status(200).json({
       success: true,
@@ -417,7 +419,7 @@ const renameGroup = async (req, res, next) => {
 
 const deleteChat = async (req, res, next) => {
   try {
-    const chatId = req.params.id;
+    const chatId = req.params.id;    
 
     const chat = await Chat.findById(chatId);
 
@@ -479,6 +481,16 @@ const getMessages = async (req, res, next) => {
 
     const limit = 20;
     const skip = (page - 1) * limit;
+
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return next(new ErrorHandler("Chat not found", 404));
+    }
+
+    if (!chat.members.includes(req.user)) {
+      return next(new ErrorHandler("You are not a member of this chat", 403));
+    }
 
     const [reverseMessages, totalMessages] = await Promise.all([
       Message.find({ chatId })

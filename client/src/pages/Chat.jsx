@@ -10,18 +10,26 @@ import AppLayout from "../components/layout/AppLayout";
 import MessageComponent from "../components/shared/MessageComponent";
 import { InputBox } from "../components/styles/StyledComponents";
 import { grayColor, orange } from "../constants/color";
-import { NEW_MESSAGE } from "../constants/events";
+import {
+  ALERT,
+  NEW_MESSAGE,
+  START_TYPING,
+  STOP_TYPING,
+} from "../constants/events";
 import { useErrors } from "../hooks/hook";
 import { useChatDetailsQuery, useGetMyMessagesQuery } from "../redux/api/api";
 import { getSocket } from "../socket";
 import { setIsFileMenu } from "../redux/reducers/misc";
 import { removeMessagesAlert } from "../redux/reducers/chat";
+import { TypingLoader } from "../components/layout/Loaders";
+import { useNavigate } from "react-router-dom";
 
 const Chat = ({ chatId }) => {
   const containerRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
   const socket = getSocket();
+  const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -30,6 +38,11 @@ const Chat = ({ chatId }) => {
   const [initialLoad, setInitialLoad] = useState(false);
   const [scrollHeight, setScrollHeight] = useState(0);
   const [fileMenuAnchorEl, setFileMenuAnchorEl] = useState(null);
+
+  const [iamTyping, setIamTyping] = useState(false);
+  const [userTyping, setUserTyping] = useState(false);
+  const typingTimeout = useRef(null);
+  const bottomRef = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -50,6 +63,22 @@ const Chat = ({ chatId }) => {
     // { isError: chatDetails?.isError, error: chatDetails?.error },
     { isError: messagesInChunk?.isError, error: messagesInChunk?.error },
   ];
+
+  const messageChangeHandler = (e) => {
+    setMessage(e.target.value);
+
+    if (!iamTyping) {
+      socket.emit(START_TYPING, { members, chatId });
+      setIamTyping(true);
+    }
+
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(() => {
+      socket.emit(STOP_TYPING, { members, chatId });
+      setIamTyping(false);
+    }, 1500);
+  };
 
   const handleFileOpen = (e) => {
     dispatch(setIsFileMenu(true));
@@ -86,11 +115,54 @@ const Chat = ({ chatId }) => {
     [chatId]
   );
 
+  const startTypingHandler = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+
+      setUserTyping(true);
+    },
+    [chatId]
+  );
+
+  const stopTypingHandler = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+
+      setUserTyping(false);
+    },
+    [chatId]
+  );
+
+  const handleAlertListener = useCallback(
+    (data) => {
+      // if (data.chatId !== chatId) return;
+
+      const messageForAlert = {
+        content: data,
+        sender: {
+          _id: "user._id",
+          name: "Admin",
+        },
+        _id: "hiwbqcbwcwucbq",
+        chat: chatId,
+        createdAt: new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, messageForAlert]);
+    },
+    [chatId]
+  );
+
   useEffect(() => {
     socket.on(NEW_MESSAGE, newMessageHandler);
+    socket.on(START_TYPING, startTypingHandler);
+    socket.on(STOP_TYPING, stopTypingHandler);
+    socket.on(ALERT, handleAlertListener);
 
     return () => {
       socket.off(NEW_MESSAGE, newMessageHandler);
+      socket.off(START_TYPING, startTypingHandler);
+      socket.off(STOP_TYPING, stopTypingHandler);
     };
   }, [chatId]);
 
@@ -119,11 +191,27 @@ const Chat = ({ chatId }) => {
   }, [messagesInChunk.isLoading]);
 
   useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (!chatDetails?.data?.chat) {
+  //       console.log("Entered");
+  //       // toast.error("Chat not found");
+  //       return navigate("/");
+  //     }
+  //   };
+  // }, [chatDetails.data]); // Remember to recreate this...
+
+  useEffect(() => {
     if (containerRef?.current) {
       containerRef.current.scrollTop =
         containerRef.current.scrollHeight - containerRef.current.clientHeight;
     }
-  }, [initialLoad, messages]);
+  }, [initialLoad]);
 
   useEffect(() => {
     if (containerRef?.current) {
@@ -159,6 +247,10 @@ const Chat = ({ chatId }) => {
             key={message._id || message.attachments[0].public_id}
           />
         ))}
+
+        {userTyping && <TypingLoader />}
+
+        <div ref={bottomRef} />
       </Stack>
 
       <form style={{ height: "10%" }} onSubmit={sendMessageHandler}>
@@ -185,7 +277,7 @@ const Chat = ({ chatId }) => {
             type="text"
             placeholder="Type Message Here..."
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={messageChangeHandler}
           />
 
           <IconButton

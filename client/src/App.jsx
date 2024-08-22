@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectRoute from "./components/auth/ProtectRoute";
 import Loader from "./components/layout/Loaders";
@@ -23,10 +23,11 @@ const MessageManagement = React.lazy(() =>
 );
 const ChatManagement = React.lazy(() => import("./pages/admin/ChatManagement"));
 
-
 const App = () => {
-  const user = React.lazy(() => useSelector((state) => state.auth.user));
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -38,8 +39,15 @@ const App = () => {
       })
       .catch((err) => {
         dispatch(userDoesNotExist());
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <Router>

@@ -25,7 +25,7 @@ const Profile = () => {
             border: "5px solid white",
           }}
         />
-        <ProfileCard heading={"Bio"} text={user.bio} />
+        <ProfileCard heading={"Bio"} text={user?.bio} />
         <ProfileCard
           heading={"Username"}
           text={user?.username}
@@ -34,7 +34,7 @@ const Profile = () => {
         <ProfileCard heading={"Name"} text={user?.name} Icon={<FaceIcon />} />
         <ProfileCard
           heading={"Joined"}
-          text={moment(user.createdAt).fromNow()}
+          text={moment(user?.createdAt).fromNow()}
           Icon={<CalendarIcon />}
         />
       </Stack>

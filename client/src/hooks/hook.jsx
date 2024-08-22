@@ -12,19 +12,23 @@ export const useErrors = (errors = []) => {
 };
 
 export const useMutation = (mutationhook) => {
-  const [mutate, { data }] = mutationhook();
+  const [mutate] = mutationhook();
+  const [response, setResponse] = useState({});
   const [loading, setLoading] = useState(false);
 
   const executeMutation = async (toastMessage, args) => {
     setLoading(true);
+
     const toastId = toast.loading(toastMessage || "Loading...");
     try {
       const res = await mutate({ ...args });
+      
+      setResponse(res);
 
       if (res.data) {
         toast.success(res.data.message || "Success", { id: toastId });
       } else {
-        toast.error(res?.error?.data?.message || "Something went wrong", {
+        toast.error(res?.error?.data?.errMessage || "Something went wrong", {
           id: toastId,
         });
       }
@@ -35,5 +39,5 @@ export const useMutation = (mutationhook) => {
     }
   };
 
-  return [executeMutation, loading, data];
+  return [executeMutation, loading, response];
 };

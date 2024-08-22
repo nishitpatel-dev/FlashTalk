@@ -1,7 +1,7 @@
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useErrors } from "../../hooks/hook";
 import { useGetMyChatsQuery } from "../../redux/api/api";
 import { setIsMobileMenu } from "../../redux/reducers/misc";
@@ -10,7 +10,11 @@ import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
 import Profile from "../specific/Profile";
 import Header from "./Header";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events";
+import {
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+  REFETCH_CHATS,
+} from "../../constants/events";
 import {
   incrementNotificationCount,
   setNewMessagesAlert,
@@ -23,6 +27,8 @@ const AppLayout = (OldComponent) => {
     const dispatch = useDispatch();
     const chatId = params.chatId;
     const socket = getSocket();
+
+    const navigate = useNavigate();
 
     const { isMobileMenu } = useSelector((state) => state.misc);
     const { newMessagesAlert } = useSelector((state) => state.chat);
@@ -43,19 +49,29 @@ const AppLayout = (OldComponent) => {
       dispatch(incrementNotificationCount());
     }, []);
 
-    const newMessageAlertHandler = useCallback((data) => {
-      if (data.chatId === chatId) return;
+    const newMessageAlertHandler = useCallback(
+      (data) => {
+        if (data.chatId === chatId) return;
 
-      dispatch(setNewMessagesAlert(data));
-    }, [chatId]);
+        dispatch(setNewMessagesAlert(data));
+      },
+      [chatId]
+    );
+
+    const refetchHandler = useCallback(() => {
+      refetch();
+      navigate("/");
+    }, []);
 
     useEffect(() => {
       socket.on(NEW_REQUEST, newRequestHandler);
       socket.on(NEW_MESSAGE_ALERT, newMessageAlertHandler);
+      socket.on(REFETCH_CHATS, refetchHandler);
 
       return () => {
         socket.off(NEW_REQUEST, newRequestHandler);
         socket.off(NEW_MESSAGE_ALERT, newMessageAlertHandler);
+        socket.off(REFETCH_CHATS, refetchHandler);
       };
     }, [chatId]);
 

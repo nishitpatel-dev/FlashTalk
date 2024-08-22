@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userDoesNotExist } from "../../redux/reducers/auth.js";
 import {
   setIsMobileMenu,
+  setIsNewGroup,
   setIsNotification,
   setIsSearch,
 } from "../../redux/reducers/misc.js";
@@ -36,11 +37,9 @@ const Search = React.lazy(() => import("../specific/Search"));
 const NewGroup = React.lazy(() => import("../specific/NewGroup"));
 
 const Header = () => {
-  const [isNewGroup, setIsNewGroup] = useState(false);
-
   const dispatch = useDispatch();
 
-  const { isSearch, isNotification } = useSelector((state) => state.misc);
+  const { isSearch, isNotification, isNewGroup } = useSelector((state) => state.misc);
   const { notificationCount } = useSelector((state) => state.chat);
 
   const navigate = useNavigate();
@@ -54,7 +53,7 @@ const Header = () => {
   };
 
   const openNewGroup = () => {
-    setIsNewGroup((prev) => !prev);
+    dispatch(setIsNewGroup(true));
   };
 
   const navigateToGroup = () => {
@@ -170,7 +169,6 @@ const Icon = ({ title, onClick, button, value }) => {
       <IconButton color="inherit" size="large" onClick={onClick}>
         {value ? (
           <Badge badgeContent={value} color="error">
-            {" "}
             {button}
           </Badge>
         ) : (
