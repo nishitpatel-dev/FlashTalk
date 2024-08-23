@@ -1,11 +1,12 @@
+import { Avatar, Box, Skeleton, Stack } from "@mui/material";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
-import Table from "../../components/shared/Table";
-import { dashboardData } from "../../constants/sampleData";
-import { fileFormat, transformImage } from "../../lib/features";
-import moment from "moment";
-import { Avatar, Box, Stack } from "@mui/material";
 import RenderAttachment from "../../components/shared/RenderAttachment";
+import Table from "../../components/shared/Table";
+import { useErrors } from "../../hooks/hook";
+import { fileFormat, transformImage } from "../../lib/features";
+import { useGetAllMessageForAdminQuery } from "../../redux/api/api";
 
 const columns = [
   {
@@ -61,13 +62,13 @@ const columns = [
     ),
   },
   {
-    field: "chat",
+    field: "chatId",
     headerName: "Chat",
     headerClassName: "table-header",
     width: 220,
   },
   {
-    field: "groupChat",
+    field: "isGroupChat",
     headerName: "Group Chat",
     headerClassName: "table-header",
     width: 100,
@@ -82,22 +83,34 @@ const columns = [
 
 const MessageManagement = () => {
   const [rows, setRows] = useState([]);
+  const { data, isError, error, isLoading } = useGetAllMessageForAdminQuery("");
+
+  useErrors([
+    {
+      isError,
+      error,
+    },
+  ]);
 
   useEffect(() => {
-    setRows(
-      dashboardData.messages.map((i) => ({
-        ...i,
-        id: i._id,
-        sender: {
-          name: i.sender.name,
-          avatar: transformImage(i.sender.avatar, 50),
-        },
-        createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
-      }))
-    );
-  }, []);
+    if (data) {
+      setRows(
+        data.messages.map((i) => ({
+          ...i,
+          id: i._id,
+          sender: {
+            name: i.sender.name,
+            avatar: transformImage(i.sender.avatar, 50),
+          },
+          createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+        }))
+      );
+    }
+  }, [data]);
 
-  return (
+  return isLoading ? (
+    <Skeleton height={"100vh"} />
+  ) : (
     <Table
       heading={"All Messages"}
       columns={columns}

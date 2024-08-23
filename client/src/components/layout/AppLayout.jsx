@@ -1,10 +1,14 @@
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useErrors } from "../../hooks/hook";
 import { useGetMyChatsQuery } from "../../redux/api/api";
-import { setIsDeleteMenu, setIsMobileMenu, setSelectedDeleteChat } from "../../redux/reducers/misc";
+import {
+  setIsDeleteMenu,
+  setIsMobileMenu,
+  setSelectedDeleteChat,
+} from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
@@ -13,6 +17,7 @@ import Header from "./Header";
 import {
   NEW_MESSAGE_ALERT,
   NEW_REQUEST,
+  ONLINE_USERS,
   REFETCH_CHATS,
 } from "../../constants/events";
 import {
@@ -29,6 +34,8 @@ const AppLayout = (OldComponent) => {
     const chatId = params.chatId;
     const deleteMenuAnchor = useRef(null);
 
+    const [onlineUsers, setOnlineUsers] = useState([]);
+
     const socket = getSocket();
 
     const navigate = useNavigate();
@@ -44,11 +51,10 @@ const AppLayout = (OldComponent) => {
       getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessagesAlert });
     }, [newMessagesAlert]);
 
-    const handleDeleteChat = (e, _id, groupChat) => {      
+    const handleDeleteChat = (e, _id, groupChat) => {
       dispatch(setIsDeleteMenu(true));
       dispatch(setSelectedDeleteChat({ chatId: _id, groupChat }));
       deleteMenuAnchor.current = e.currentTarget;
-
     };
 
     const handleMobileMenuClose = () => {
@@ -73,15 +79,24 @@ const AppLayout = (OldComponent) => {
       navigate("/");
     }, []);
 
+    const onlineUsersHandler = useCallback(
+      (data) => {
+        setOnlineUsers(data);
+      },
+      [onlineUsers]
+    );
+
     useEffect(() => {
       socket.on(NEW_REQUEST, newRequestHandler);
       socket.on(NEW_MESSAGE_ALERT, newMessageAlertHandler);
       socket.on(REFETCH_CHATS, refetchHandler);
+      socket.on(ONLINE_USERS, onlineUsersHandler);
 
       return () => {
         socket.off(NEW_REQUEST, newRequestHandler);
         socket.off(NEW_MESSAGE_ALERT, newMessageAlertHandler);
         socket.off(REFETCH_CHATS, refetchHandler);
+        socket.off(ONLINE_USERS, onlineUsersHandler);
       };
     }, [chatId]);
 
@@ -104,6 +119,7 @@ const AppLayout = (OldComponent) => {
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
               newMessagesAlert={newMessagesAlert}
+              onlineUsers={onlineUsers}
             />
           </Drawer>
         )}
@@ -129,6 +145,7 @@ const AppLayout = (OldComponent) => {
                 chatId={chatId}
                 handleDeleteChat={handleDeleteChat}
                 newMessagesAlert={newMessagesAlert}
+                onlineUsers={onlineUsers}
               />
             )}
           </Grid>

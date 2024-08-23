@@ -9,8 +9,11 @@ import userRoute from "./routes/userRoute.js";
 import chatRoute from "./routes/chatRoute.js";
 import { Server } from "socket.io";
 import {
+  CHAT_JOINED,
+  CHAT_LEFT,
   NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
+  ONLINE_USERS,
   START_TYPING,
   STOP_TYPING,
 } from "./constants/events.js";
@@ -71,6 +74,7 @@ const io = new Server(serverInstance, {
 app.set("io", io);
 
 export const userScoketIDs = new Map();
+export const onlineUsers = new Set();
 
 io.use((socket, next) => {
   cookieParser()(socket.request, socket.request.res, async () => {
@@ -105,8 +109,6 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   const user = socket.user;
   userScoketIDs.set(user._id.toString(), socket.id);
-  // console.count("Socket connected", socket.id);
-  // console.log(userScoketIDs);
 
   socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
     const messageForRealTime = {
@@ -139,7 +141,7 @@ io.on("connection", (socket) => {
     try {
       await Message.create(messageForDB);
     } catch (error) {
-      console.log(error);
+      throw new Error(error.message, 500);
     }
   });
 
@@ -159,9 +161,24 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on(CHAT_JOINED, ({ userId, members }) => {
+    onlineUsers.add(userId.toString());
+
+    const membersSockets = getSockets(members);
+    io.to(membersSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
+  socket.on(CHAT_LEFT, ({ userId, members }) => {
+    onlineUsers.delete(userId.toString());
+
+    const membersSockets = getSockets(members);
+    io.to(membersSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
   socket.on("disconnect", () => {
     userScoketIDs.delete(user._id.toString());
-    // console.log("Socket disconnected", socket.id);
+    onlineUsers.delete(user._id.toString());
+    socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
   });
 });
 

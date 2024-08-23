@@ -1,10 +1,11 @@
+import { Avatar, Skeleton, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
-import { Avatar, Stack } from "@mui/material";
-import Table from "../../components/shared/Table";
 import AvatarCard from "../../components/shared/AvatarCard";
-import { dashboardData } from "../../constants/sampleData";
+import Table from "../../components/shared/Table";
+import { useErrors } from "../../hooks/hook";
 import { transformImage } from "../../lib/features";
+import { useGetAllChatsForAdminQuery } from "../../redux/api/api";
 
 const columns = [
   {
@@ -25,6 +26,12 @@ const columns = [
     headerName: "Name",
     headerClassName: "table-header",
     width: 300,
+  },
+  {
+    field: "isGroupChat",
+    headerName: "Group",
+    headerClassName: "table-header",
+    width: 100,
   },
   {
     field: "totalMembers",
@@ -63,26 +70,35 @@ const columns = [
 
 const ChatManagement = () => {
   const [rows, setRows] = useState([]);
+  const { data, isError, error, isLoading } = useGetAllChatsForAdminQuery("");
+
+  useErrors([
+    {
+      isError,
+      error,
+    },
+  ]);
 
   useEffect(() => {
-    setRows(
-      dashboardData.chats.map((i) => ({
-        ...i,
-        id: i._id,
-        avatar: i.avatar.map((i) => transformImage(i, 50)),
-        members: i.members.map((i) => transformImage(i.avatar, 50)),
-        creator: {
-          name: i.creator.name,
-          avatar: transformImage(i.creator.avatar, 50),
-        },
-      }))
-    );
-  }, []);
+    if (data) {
+      setRows(
+        data.chats.map((i) => ({
+          ...i,
+          id: i._id,
+          avatar: i.avatar.map((i) => transformImage(i, 50)),
+          members: i.members.map((i) => transformImage(i.avatar, 50)),
+          creator: {
+            name: i.creator.name,
+            avatar: transformImage(i.creator.avatar, 50),
+          },
+        }))
+      );
+    }
+  }, [data]);
 
-  // console.log(rows);
-  // console.log(columns);
-
-  return (
+  return isLoading ? (
+    <Skeleton height={"100vh"} />
+  ) : (
     <>
       <Table heading={"All Chats"} columns={columns} rows={rows} />
     </>

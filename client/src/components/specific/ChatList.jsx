@@ -31,6 +31,14 @@ const ChatList = ({
           (element) => element.chatId == _id
         );
 
+        console.log(members);
+
+        const isOnline = members?.some((member) =>
+          onlineUsers.includes(member)
+        );
+
+        console.log(isOnline);
+
         return (
           <ChatItem
             index={index}
@@ -42,6 +50,7 @@ const ChatList = ({
             groupChat={isGroupChat}
             newMessageAlert={newMessageAlert}
             handleDeleteChat={handleDeleteChat}
+            isOnline={isOnline}
           />
         );
       })}

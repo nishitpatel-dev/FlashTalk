@@ -16,7 +16,7 @@ const MessageComponent = ({ message, user }) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: "-100%" }}
-      whileInView={{ opacity: 1, x: 0 }}
+      animate={{ opacity: 1, x: 0 }}
       style={{
         alignSelf: sameSender ? "flex-end" : "flex-start",
         backgroundColor: "white",

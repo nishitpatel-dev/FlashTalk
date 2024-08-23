@@ -102,7 +102,7 @@ const getAllChats = async (req, res, next) => {
         return {
           _id,
           isGroupChat,
-          chatName,
+          name: chatName,
           avatar: members.slice(0, 3).map((member) => member.avatar.url),
           members: members.map(({ _id, name, avatar }) => ({
             _id,
@@ -141,8 +141,8 @@ const getAllMessages = async (req, res, next) => {
         content,
         createdAt,
 
-        chatId: chatId._id,
-        isGroupChat: chatId.isGroupChat,
+        chatId: chatId?._id,
+        isGroupChat: chatId?.isGroupChat,
         sender: {
           _id: sender._id,
           name: sender.name,
@@ -175,9 +175,7 @@ const getDashboardStats = async (req, res, next) => {
     const today = new Date();
 
     const last7Days = new Date();
-    console.log(today, last7Days.getDate());
     last7Days.setDate(last7Days.getDate() - 7);
-    console.log(last7Days);
 
     const last7DaysMessages = await Message.find({
       createdAt: {

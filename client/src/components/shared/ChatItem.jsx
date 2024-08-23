@@ -13,6 +13,7 @@ const ChatItem = ({
   index = 0,
   newMessageAlert,
   handleDeleteChat,
+  isOnline,
 }) => {
   return (
     <LinkComponent
@@ -23,8 +24,7 @@ const ChatItem = ({
       <motion.div
         initial={{ opacity: 0, y: "-100%" }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{delay: index * 0.1}}
-
+        transition={{ delay: index * 0.1 }}
         style={{
           display: "flex",
           alignItems: "center",
@@ -43,7 +43,7 @@ const ChatItem = ({
           )}
         </Stack>
 
-        {/* {isOnline && (
+        {isOnline && (
           <Box
             sx={{
               width: "10px",
@@ -56,7 +56,7 @@ const ChatItem = ({
               transform: "translateY(-50%)",
             }}
           />
-        )} */}
+        )}
       </motion.div>
     </LinkComponent>
   );
