@@ -45,7 +45,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
@@ -66,7 +66,7 @@ const serverInstance = app.listen(PORT, () => {
 
 const io = new Server(serverInstance, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
 });
